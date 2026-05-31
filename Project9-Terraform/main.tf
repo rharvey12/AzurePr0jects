@@ -122,3 +122,37 @@ resource "azurerm_subscription_policy_assignment" "retention_policy" {
   subscription_id      = data.azurerm_subscription.current.id
   display_name         = "Audit Log Retention Requirement"
 }
+
+
+# Action Group for Compliance Alerts
+resource "azurerm_monitor_action_group" "compliance_alerts" {
+  name                = "nist-compliance-alerts"
+  resource_group_name = "nbateams"
+  short_name          = "nistalert"
+
+  email_receiver {
+    name                    = "compliance-team"
+    email_address           = "Harveyr@roderickharvey10gmail.onmicrosoft.com"
+    use_common_alert_schema = true
+  }
+}
+
+# Activity Log Alert - Policy Violation Detected
+resource "azurerm_monitor_activity_log_alert" "policy_violations" {
+  name                = "nist-policy-violation-alert"
+  resource_group_name = "nbateams"
+  location            = "global"
+  scopes              = [data.azurerm_subscription.current.id]
+  description         = "Alert when Azure Policy detects NIST violations"
+
+  criteria {
+    category       = "Policy"
+    operation_name = "Microsoft.Authorization/policies/audit/action"
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.compliance_alerts.id
+  }
+}
+
+
