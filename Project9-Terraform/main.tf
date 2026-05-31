@@ -18,3 +18,107 @@ resource "azurerm_subscription_policy_assignment" "nist_800_53" {
 output "nist_assignment_id" {
   value = azurerm_subscription_policy_assignment.nist_800_53.id
 }
+
+
+# Custom Policy 1: NIST SC-28 - Require Storage Encryption
+resource "azurerm_policy_definition" "require_storage_https" {
+  name         = "nist-sc8-require-https-storage"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "NIST SC-8: Storage Accounts Must Use HTTPS"
+  description  = "Audits storage accounts that don't enforce HTTPS-only traffic"
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type"
+          equals = "Microsoft.Storage/storageAccounts"
+        },
+        {
+          field  = "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly"
+          equals = "false"
+        }
+      ]
+    }
+    then = {
+      effect = "audit"
+    }
+  })
+}
+
+# Custom Policy 2: NIST SC-7 - Require NSG on Subnets
+resource "azurerm_policy_definition" "require_nsg_on_subnet" {
+  name         = "nist-sc7-require-nsg"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "NIST SC-7: Subnets Must Have NSG Attached"
+  description  = "Audits subnets that don't have a Network Security Group attached"
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type"
+          equals = "Microsoft.Network/virtualNetworks/subnets"
+        },
+        {
+          field  = "Microsoft.Network/virtualNetworks/subnets/networkSecurityGroup.id"
+          exists = "false"
+        }
+      ]
+    }
+    then = {
+      effect = "audit"
+    }
+  })
+}
+
+# Custom Policy 3: NIST AU-11 - Require Log Analytics Retention
+resource "azurerm_policy_definition" "require_log_retention" {
+  name         = "nist-au11-log-retention"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "NIST AU-11: Log Analytics Must Have 90+ Day Retention"
+  description  = "Audits Log Analytics workspaces with less than 90 day retention"
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type"
+          equals = "Microsoft.OperationalInsights/workspaces"
+        },
+        {
+          field  = "Microsoft.OperationalInsights/workspaces/retentionInDays"
+          less   = 90
+        }
+      ]
+    }
+    then = {
+      effect = "audit"
+    }
+  })
+}
+
+# Assign all custom policies to subscription
+resource "azurerm_subscription_policy_assignment" "https_policy" {
+  name                 = "audit-storage-https"
+  policy_definition_id = azurerm_policy_definition.require_storage_https.id
+  subscription_id      = data.azurerm_subscription.current.id
+  display_name         = "Audit Storage HTTPS Requirement"
+}
+
+resource "azurerm_subscription_policy_assignment" "nsg_policy" {
+  name                 = "audit-subnet-nsg"
+  policy_definition_id = azurerm_policy_definition.require_nsg_on_subnet.id
+  subscription_id      = data.azurerm_subscription.current.id
+  display_name         = "Audit Subnet NSG Requirement"
+}
+
+resource "azurerm_subscription_policy_assignment" "retention_policy" {
+  name                 = "audit-log-retention"
+  policy_definition_id = azurerm_policy_definition.require_log_retention.id
+  subscription_id      = data.azurerm_subscription.current.id
+  display_name         = "Audit Log Retention Requirement"
+}
