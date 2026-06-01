@@ -23,7 +23,9 @@ jobs:
           directory: .
           framework: terraform
           output_format: cli
-          soft_fail: true
+          soft_fail: false
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
 
       - name: Upload Checkov Results
         if: always()
