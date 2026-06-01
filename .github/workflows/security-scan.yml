@@ -1,0 +1,61 @@
+name: Security Scan + Compliance Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    name: Checkov Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Checkov Action
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+          output_format: cli
+          soft_fail: true
+
+      - name: Upload Checkov Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkov-results
+          path: results.sarif
+        continue-on-error: true
+
+  terraform-validate:
+    name: Validate All Terraform
+    runs-on: ubuntu-latest
+    needs: security-scan
+    strategy:
+      matrix:
+        project: [Project5-Terraform-IaC, Project6-Terraform, Project7-Terraform, Project8-Terraform, Project9-Terraform]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        working-directory: ${{ matrix.project }}
+        continue-on-error: true
+
+      - name: Terraform Init (No Backend)
+        run: terraform init -backend=false
+        working-directory: ${{ matrix.project }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ matrix.project }}
