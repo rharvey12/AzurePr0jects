@@ -20,7 +20,7 @@ jobs:
       - name: Run Checkov Action
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: .
+          directory: Project7-Terraform
           framework: terraform
           output_format: cli
           soft_fail: false
