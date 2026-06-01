@@ -160,7 +160,6 @@ resource "azurerm_monitor_activity_log_alert" "policy_violations" {
 
 # Sentinel Analytics Rule - Detect NIST Policy Violations
 resource "azurerm_sentinel_alert_rule_scheduled" "nist_violations" {
-  depends_on = [azurerm_sentinel_log_analytics_workspace_onboarding.clevelandcavs]
   name                       = "nist-policy-violations-detector"
   log_analytics_workspace_id = "/subscriptions/e6b4cc00-3c07-4595-8bb7-ca22d6ca16f5/resourceGroups/nbateams/providers/Microsoft.OperationalInsights/workspaces/clevelandcavs"
   display_name               = "NIST Policy Violations Detected"
