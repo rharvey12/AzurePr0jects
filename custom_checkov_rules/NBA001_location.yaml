@@ -1,0 +1,18 @@
+metadata:
+  name: "NBA-001: Resources must deploy to East US region"
+  id: "CKV_NBA_001"
+  category: "GENERAL_SECURITY"
+  severity: "MEDIUM"
+
+scope:
+  provider: "azure"
+
+definition:
+  cond_type: "attribute"
+  resource_types:
+    - "azurerm_resource_group"
+    - "azurerm_virtual_network"
+    - "azurerm_storage_account"
+  attribute: "location"
+  operator: "equals"
+  value: "East US"

@@ -23,6 +23,7 @@ jobs:
           directory: Project7-Terraform
           framework: terraform
           output_format: cli
+          external_checks_dirs: custom_checkov_rules
           soft_fail: false
 
   terraform-validate:
