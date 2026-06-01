@@ -24,16 +24,6 @@ jobs:
           framework: terraform
           output_format: cli
           soft_fail: false
-          output_format: cli,sarif
-          output_file_path: console,results.sarif
-
-      - name: Upload Checkov Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: checkov-results
-          path: results.sarif
-        continue-on-error: true
 
   terraform-validate:
     name: Validate All Terraform
@@ -48,11 +38,6 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
-        working-directory: ${{ matrix.project }}
-        continue-on-error: true
 
       - name: Terraform Init (No Backend)
         run: terraform init -backend=false
