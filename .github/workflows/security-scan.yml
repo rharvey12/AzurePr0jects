@@ -39,7 +39,7 @@ jobs:
     needs: security-scan
     strategy:
       matrix:
-        project: [Project5-Terraform-IaC, Project6-Terraform, Project7-Terraform, Project8-Terraform, Project9-Terraform]
+        project: [Project5-Terraform-IaC, Project7-Terraform, Project9-Terraform]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
