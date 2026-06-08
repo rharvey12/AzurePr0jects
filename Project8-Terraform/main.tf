@@ -45,18 +45,18 @@ resource "azurerm_subnet" "lab" {
 
 # VNet Peering Bidirectional
 resource "azurerm_virtual_network_peering" "hub_to_lab" {
-  name                      = "hub-to-lab"
-  resource_group_name       = azurerm_resource_group.nbateams.name
-  virtual_network_name      = azurerm_virtual_network.atlantahawks.name
-  remote_virtual_network_id = azurerm_virtual_network.brooklynnets.id
+  name                         = "hub-to-lab"
+  resource_group_name          = azurerm_resource_group.nbateams.name
+  virtual_network_name         = azurerm_virtual_network.atlantahawks.name
+  remote_virtual_network_id    = azurerm_virtual_network.brooklynnets.id
   allow_virtual_network_access = true
 }
 
 resource "azurerm_virtual_network_peering" "lab_to_hub" {
-  name                      = "lab-to-hub"
-  resource_group_name       = azurerm_resource_group.nbateams.name
-  virtual_network_name      = azurerm_virtual_network.brooklynnets.name
-  remote_virtual_network_id = azurerm_virtual_network.atlantahawks.id
+  name                         = "lab-to-hub"
+  resource_group_name          = azurerm_resource_group.nbateams.name
+  virtual_network_name         = azurerm_virtual_network.brooklynnets.name
+  remote_virtual_network_id    = azurerm_virtual_network.atlantahawks.id
   allow_virtual_network_access = true
 }
 
@@ -258,7 +258,7 @@ resource "azurerm_windows_virtual_machine" "detroitpistons_vm2" {
   location              = azurerm_resource_group.nbateams.location
   size                  = "Standard_D2s_v3"
   admin_username        = "azureuser"
-  admin_password        = "REMOVED_PASSWORD_PLACEHOLDER"
+  admin_password        = var.admin_password
   network_interface_ids = [azurerm_network_interface.vm2_nic.id]
 
   os_disk {
@@ -273,3 +273,10 @@ resource "azurerm_windows_virtual_machine" "detroitpistons_vm2" {
     version   = "latest"
   }
 }
+
+variable "admin_password" {
+  type        = string
+  description = "Windows VM admin password - set via TF_VAR_admin_password env var"
+  sensitive   = true
+}
+

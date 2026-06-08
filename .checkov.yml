@@ -1,0 +1,22 @@
+# Checkov configuration
+framework:
+  - terraform
+  - secrets
+
+# Skip checks acceptable in lab environments
+skip-check:
+  - CKV_AZURE_50   # VM Extensions (lab limitation)
+  - CKV_AZURE_151  # Windows encryption (lab limitation)
+
+# Block on critical findings
+hard-fail-on:
+  - CKV_SECRET_*   # ANY secret detection
+  - CKV_AZURE_1    # No basic auth
+  - CKV_AZURE_3    # HTTPS only
+  - CKV_AZURE_9    # No RDP from internet
+  - CKV_AZURE_10   # No SSH from internet
+  - CKV_AZURE_149  # No password auth (Linux)
+
+output: cli
+quiet: false
+compact: true
