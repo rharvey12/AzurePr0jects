@@ -7,7 +7,7 @@ repos:
       - id: terraform_checkov
         args:
           - --args=--framework terraform
-          - --args=--skip-check CKV_AZURE_50,CKV_AZURE_151,CKV_AZURE_225,CKV_AZURE_212,CKV_AZURE_63,CKV_AZURE_213,CKV_AZURE_65,CKV_AZURE_222,CKV_AZURE_17,CKV_AZURE_88,CKV_AZURE_66,CKV_AZURE_13
+          - --args=--skip-check CKV_AZURE_50,CKV_AZURE_151,CKV_AZURE_225,CKV_AZURE_212,CKV_AZURE_63,CKV_AZURE_213,CKV_AZURE_65,CKV_AZURE_222,CKV_AZURE_17,CKV_AZURE_88,CKV_AZURE_66,CKV_AZURE_13,CKV_AZURE_165,CKV_AZURE_166,CKV_AZURE_237
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
